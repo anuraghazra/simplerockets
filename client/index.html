@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Simple Rockets</title>
+  <style>
+    * {
+      margin: 0;
+      font-family: 'Fugaz One Regular';
+      font-weight: 100;
+      box-sizing: border-box;
+    }
+
+    canvas {
+      border: 1px solid black;
+    }
+
+    form {
+      width: 100%;
+      height: auto;
+      padding: 10px;
+    }
+
+    input {
+      padding: 10px;
+      margin: 5px;
+      border-radius: 10px;
+      border: 2px solid dimgray;
+      outline: none;
+    }
+
+    button {
+      padding: 10px;
+      margin: 5px;
+      background-color: transparent;
+      border-radius: 10px;
+      border: 2px solid dimgray;
+      cursor: pointer;
+    }
+
+    hr {
+      margin: 5px 0px 5px 0px;
+    }
+  </style>
+  <script src="/socket.io/socket.io.js"></script>
+</head>
+
+<body>
+
+  <form>
+    <h2>Simple Rocket</h2>
+    <hr color="dimgray" noshade>
+    <input type="text" id="player-name" placeholder="Your name">
+    <button id="submit">Start Match</button>
+  </form>
+
+  <script src="./js/Candy.js"></script>
+  <script src="./js/Game.client.js"></script>
+  <script src="./js/Player.client.js"></script>
+  <script src="./js/Bullet.client.js"></script>
+  <!-- <script src="./src/Bullet.client.js"></script> -->
+  <script src="./client.js"></script>
+  
+</body>
+
+</html>
