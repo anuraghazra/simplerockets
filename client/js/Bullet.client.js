@@ -10,7 +10,6 @@ function Bullet(pack) {
 Bullet.prototype.draw = function() {
   c.fill('black');
   c.circle(this.pos.x, this.pos.y, 2);
-  this.index++;
 }
 
 // Bullet.List = [];

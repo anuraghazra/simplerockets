@@ -12,7 +12,7 @@ function Bullet(pos, angle, id, parent) {
   this.parent = parent;
 }
 
-Bullet.prototype.update = function(players) {
+Bullet.prototype.update = function(players, gameAlerts, socket) {
   this.pos.add(this.vel);
   this.timer++;
 
@@ -25,8 +25,10 @@ Bullet.prototype.update = function(players) {
       this.isDead = true;
     }
     if (p.hp <= 0 && this.isDead) {
-      console.log('i am dead', players[this.parent].score, this.parent)
       players[this.parent].score++;
+      let stat = players[this.parent].name + ' killed ' + p.name + '!';
+      console.log(stat);
+      gameAlerts.push(stat);
     }
   }
 
@@ -34,6 +36,20 @@ Bullet.prototype.update = function(players) {
     this.isDead = true;
   }
 }
+
+// Bullet.prototype.hit = function(player, players, gameAlerts) {
+//   let p = player;
+//   if (this.getDistance(p.pos) < 20 && p.id !== this.parent) {
+//     p.hp -= 10;
+//     p.hp = utils.clamp(p.hp, 0, p.maxhp);
+//     this.isDead = true;
+//   }
+//   if (p.hp <= 0 && this.isDead) {
+//     players[this.parent].score++;
+//     console.log(players[this.parent].name + ' killed ' + p.name);
+//     gameAlerts.push(players[this.parent].name + ' killed ' + p.name);
+//   }
+// }
 
 Bullet.prototype.getDistance = function(v) {
   return Math.sqrt(Math.pow(this.pos.x - v.x, 2) + Math.pow(this.pos.y - v.y, 2))

@@ -23,8 +23,10 @@ let game = new Game();
 
 let removePack = {};
 
+let sock = null;
 io.sockets.on('connection', function (socket) {
-
+  
+  sock = socket;
   // add new player
   socket.on('new-player', function (data) {
     game.addPlayer(data.name, socket);
@@ -32,7 +34,7 @@ io.sockets.on('connection', function (socket) {
 
   // remove player
   socket.on('disconnect', function () {
-    game.removePlayer(socket.id);
+    game.removePlayer(socket);
     removePack = {id : socket.id};
   });
 
@@ -51,7 +53,7 @@ io.sockets.on('connection', function (socket) {
 setInterval(loop, FRAMERATE);
 
 function loop() {
-  game.update();
+  game.update(sock);
   for (const i in game.clients) {
     game.sendPack(game.clients[i]);
     game.clients[i].emit('remove-player', removePack);

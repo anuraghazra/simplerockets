@@ -7,21 +7,30 @@ function Game() {
   this.players = {};
 
   this.bullets = [];
-}
 
+  this.gameAlerts = [];
+}
 Game.prototype.addPlayer = function (name, socket) {
   this.clients[socket.id] = socket;
   this.players[socket.id] = Player.createNewPlayer(name, socket.id);
-  console.log('player added');
+  if(this.players[socket.id]) {
+    let stat = this.players[socket.id].name + ' joined the game.';
+    this.gameAlerts.push(stat);
+    console.log(stat);
+  }
 }
 
-Game.prototype.removePlayer = function (id) {
-  delete this.clients[id];
-  delete this.players[id]
-  console.log('player removed');
+Game.prototype.removePlayer = function (socket) {
+  if(this.players[socket.id]) {
+    let stat = this.players[socket.id].name + ' leave the game.';
+    this.gameAlerts.push(stat);
+    console.log(stat);
+  }
+  delete this.clients[socket.id];
+  delete this.players[socket.id];
 };
 
-Game.prototype.update = function () {
+Game.prototype.update = function (socket) {
   for (const i in this.players) {
     this.players[i].update();
     if (this.players[i].dead === true) {
@@ -30,8 +39,12 @@ Game.prototype.update = function () {
   }
 
   for (let i = 0; i < this.bullets.length; i++) {
-    this.bullets[i].update(this.players);
+    this.bullets[i].update(this.players, this.gameAlerts, socket);
+    if (this.bullets[i].isDead) {
+      this.bullets.splice(i, 1);
+    }
   }
+  
 }
 
 // Send A Package to the all clients
@@ -50,40 +63,20 @@ Game.prototype.sendPack = function (socket) {
       name: player.name
     })
   }
+
+  
   let packBullets = [];
-  console.log(this.bullets.length);
   for (let i = 0; i < this.bullets.length; i++) {
     let bullet = this.bullets[i];
-    // if (bullet.isDead === true) {
-    //   packBullets.push({
-    //     pos: bullet.pos,
-    //     angle: bullet.angle,
-    //     id: bullet.id,
-    //     parent: bullet.parent,
-    //     isDead: bullet.isDead
-    //   })
-    //   this.bullets.splice(i, 1);
-    // } else {
-    //   packBullets.push({
-    //     pos: bullet.pos,
-    //     angle: bullet.angle,
-    //     id: bullet.id,
-    //     parent: bullet.parent,
-    //     isDead: bullet.isDead
-    //   })
-    // }
     packBullets.push({
       pos: bullet.pos,
       angle: bullet.angle,
-      id: bullet.id,
       parent: bullet.parent,
       isDead: bullet.isDead
     })
-    if(bullet.isDead) {
-      this.bullets.splice(i, 1);
-    }
   }
   // return pack;
+  socket.emit('game-alerts', this.gameAlerts);
   socket.emit('update', { players: packPlayer, bullets: packBullets });
 }
 

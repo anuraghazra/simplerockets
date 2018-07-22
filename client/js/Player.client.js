@@ -1,13 +1,14 @@
 // Client Side Player State
 function Player(pack) {
   this.pos = pack.pos;
-  this.angle = pack.angle;
   this.name = pack.name;
   this.id = pack.id;
   this.hp = pack.hp;
+  this.angle = pack.angle;
   this.maxhp = pack.maxhp;
   this.score = pack.score;
   this.thrusting = pack.thrusting;
+  
 }
 
 Player.prototype.draw = function() {

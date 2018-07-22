@@ -3,7 +3,7 @@ function Game(socket) {
   this.self = null;
 
   this.players = {};
-  this.bullets = {};
+  this.bullets = [];
 }
 
 Game.prototype.sendUserInput = function () {
@@ -30,16 +30,10 @@ Game.prototype.getServerData = function (serverdata) {
     this.players[p.id] = new Player(p);
   }
 
-  if (serverdata.bullets.length > 0) {
-    for (let i = 0; i < serverdata.bullets.length; i++) {
-      let b = serverdata.bullets[i];
-      this.bullets[b.id] = new Bullet(b);
-      if(this.bullets[b.id] === true) {
-        delete this.bullets[b.id];
-      }
-    }
-  } else {
-    this.bullets = {};
+  for (let i = 0; i < serverdata.bullets.length; i++) {
+    let b = serverdata.bullets[i];
+    this.bullets.length = serverdata.bullets.length;
+    this.bullets[i] = new Bullet(b);
   }
 }
 
@@ -48,11 +42,13 @@ Game.prototype.update = function () {
     this.players[i].draw();
     this.players[i].drawHp();
   }
-  for (const i in this.bullets) {
-    if (this.bullets[i].isDead === true) {
-      delete this.bullets[i];
-    } else {
-      this.bullets[i].draw();
-    }
+  for (let i = 0; i < this.bullets.length; i++) {
+    this.bullets[i].draw();
   }
+  // for (let i = 0; i < this.bullets.length; i++) {
+    // this.bullets[i].index++;
+    // if(this.bullets[i].index > 100) {
+    //   this.bullets.splice(i, 1);
+    // }
+  // }
 }

@@ -8,7 +8,7 @@ function Player(name, id) {
   this.thrust = new Vector(0, 0);
   this.thrusting = false;
   this.angle = 0;
-
+  this.index = 0;
   this.id = id;
   this.maxSpeed = 10;
 
@@ -17,7 +17,6 @@ function Player(name, id) {
   this.dead = false;
   this.score = 0;
 
-  this.index = 0;
   this.name = name;
 
   this.key = {
@@ -74,7 +73,7 @@ Player.prototype.respawn = function () {
   this.dead = false;
 }
 Player.prototype.shoot = function () {
-  let bullet = new Bullet(this.pos, this.angle, this.index, this.id);
+  let bullet = new Bullet(this.pos, this.angle, this.index,  this.id);
   this.index++;
   return bullet;
 }
