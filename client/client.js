@@ -8,55 +8,28 @@ let addBtn = document.getElementById('submit');
 let playerName = document.getElementById('player-name');
 
 // add new player
-addBtn.onclick = function (e) {
+addBtn.addEventListener('click', function (e) {
   e.preventDefault();
   socket.emit('new-player', { name: playerName.value });
-}
+})
 
 let game = new Game(socket);
-console.log(socket)
-
-game.updateInput();
+game.sendUserInput();
 
 // draw loop
-socket.on('update', function (data) {
-  draw(data);
-});
-
-socket.on('remove-player', function (data) {
-  delete Player.List[data.id];
-})
+socket.on('update', data => draw(data));
+socket.on('remove-player', data => delete game.players[data.id]);
 
 function draw(data) {
   c.clear();
 
+  game.getServerData(data);
+  game.update();
 
-  for (let i = 0; i < data.players.length; i++) {
-    let p = data.players[i];
-    Player.List[p.id] = new Player(p);
-    Player.List[p.id].draw();
-    Player.List[p.id].drawHp();
-
-    // player names
-    c.textSize(10);
-    c.textAlign(CENTER);
-    c.text(p.name, Player.List[p.id].pos.x, Player.List[p.id].pos.y - 30);
-  }
-  for (let i = 0; i < data.bullets.length; i++) {
-    let b = data.bullets[i];
-    Bullet.List[i] = new Bullet(b);
-    Bullet.List[i].draw();
-  }
-  for (let i = 0; i < Bullet.List.length; i++) {
-    Bullet.List[i].index++;
-    if (Bullet.List[i].index > 100) {
-      Bullet.List.splice(i, 1);
-    }
-  }
-  console.log(Bullet.List)
+  console.log(game.bullets);
 
   c.fill('black');
   c.textSize(15);
   c.textAlign('left')
-  c.text('score : ' + Player.List[socket.id].score, 15, 25);
+  c.text('score : ' + game.players[socket.id].score, 15, 25);
 }

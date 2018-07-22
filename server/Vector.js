@@ -129,7 +129,30 @@ Vector.prototype = {
     var c = this.mag();
     this.x = Math.cos(b) * c;
     this.y = Math.sin(b) * c;
-  }
+  },
+
+  // angleTo : function(v) {
+  //   return Math.atan2(v.y - this.y, v.x - this.x);
+  // },
+
+  // setLength : function(length) {
+  //   let angle = this.heading();
+  //   this.x = Math.cos(angle) * length;
+  //   this.y = Math.sin(angle) * length;
+  // },
+
+  // gravitateTo : function(v, mass) {
+  //   let grav = new Vector(0,0);
+  //   let dist = this.dist(v);
+
+  //   grav.setLength(mass / (dist*dist));
+  //   grav.rotate(this.angleTo(v));
+
+  //   if(dist > 100) {
+  //     return grav;
+  //   } 
+  //   return grav.div(dist).negative()
+  // }
 }
 
 module.exports = Vector;

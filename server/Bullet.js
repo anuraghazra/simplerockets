@@ -4,7 +4,7 @@ const utils = require('./utils');
 function Bullet(pos, angle, id, parent) {
   this.pos = new Vector(pos.x, pos.y);
   this.vel = Vector.fromAngle(angle);
-  this.vel.mult(10.0)
+  this.vel.mult(10.0);
   this.angle = angle;
   this.isDead = false;
   this.timer = 0;
@@ -14,7 +14,6 @@ function Bullet(pos, angle, id, parent) {
 
 Bullet.prototype.update = function(players) {
   this.pos.add(this.vel);
-
   this.timer++;
 
   // handle collision between bullet and player
@@ -31,10 +30,8 @@ Bullet.prototype.update = function(players) {
     }
   }
 
-
   if (this.timer > 100) {
     this.isDead = true;
-    this.timer = 0;
   }
 }
 

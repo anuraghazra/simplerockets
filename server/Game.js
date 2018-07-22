@@ -31,9 +31,6 @@ Game.prototype.update = function () {
 
   for (let i = 0; i < this.bullets.length; i++) {
     this.bullets[i].update(this.players);
-    if(this.bullets[i].isDead === true) {
-      this.bullets.splice(i, 1)
-    }
   }
 }
 
@@ -54,18 +51,40 @@ Game.prototype.sendPack = function (socket) {
     })
   }
   let packBullets = [];
+  console.log(this.bullets.length);
   for (let i = 0; i < this.bullets.length; i++) {
     let bullet = this.bullets[i];
+    // if (bullet.isDead === true) {
+    //   packBullets.push({
+    //     pos: bullet.pos,
+    //     angle: bullet.angle,
+    //     id: bullet.id,
+    //     parent: bullet.parent,
+    //     isDead: bullet.isDead
+    //   })
+    //   this.bullets.splice(i, 1);
+    // } else {
+    //   packBullets.push({
+    //     pos: bullet.pos,
+    //     angle: bullet.angle,
+    //     id: bullet.id,
+    //     parent: bullet.parent,
+    //     isDead: bullet.isDead
+    //   })
+    // }
     packBullets.push({
       pos: bullet.pos,
       angle: bullet.angle,
       id: bullet.id,
       parent: bullet.parent,
-      isDead : bullet.isDead
+      isDead: bullet.isDead
     })
+    if(bullet.isDead) {
+      this.bullets.splice(i, 1);
+    }
   }
   // return pack;
-  socket.emit('update', { players: packPlayer, bullets : packBullets });
+  socket.emit('update', { players: packPlayer, bullets: packBullets });
 }
 
 module.exports = Game;

@@ -2,14 +2,15 @@
 function Bullet(pack) {
   this.pos = pack.pos;
   this.id = pack.id;
-  this.owner = pack.owner;
+  this.parent = pack.parent;
   this.index = 0;
-  this.isDead = false;
+  this.isDead = pack.isDead;
 }
 
 Bullet.prototype.draw = function() {
   c.fill('black');
   c.circle(this.pos.x, this.pos.y, 2);
+  this.index++;
 }
 
-Bullet.List = [];
+// Bullet.List = [];

@@ -41,6 +41,7 @@ Player.prototype.update = function () {
   }
 
   this.applyForce(this.thrust);
+
   this.vel.mult(0.98)
   this.vel.limit(this.maxSpeed);
   this.pos.add(this.vel);
@@ -73,8 +74,8 @@ Player.prototype.respawn = function () {
   this.dead = false;
 }
 Player.prototype.shoot = function () {
-  this.index++;
   let bullet = new Bullet(this.pos, this.angle, this.index, this.id);
+  this.index++;
   return bullet;
 }
 

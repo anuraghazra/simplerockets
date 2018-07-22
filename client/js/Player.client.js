@@ -2,7 +2,7 @@
 function Player(pack) {
   this.pos = pack.pos;
   this.angle = pack.angle;
-
+  this.name = pack.name;
   this.id = pack.id;
   this.hp = pack.hp;
   this.maxhp = pack.maxhp;
@@ -33,5 +33,9 @@ Player.prototype.drawHp = function() {
   c.fill('crimson');
   c.noStroke();
   c.rect(this.pos.x - 15, this.pos.y - 25, this.hp * 30 / this.maxhp, 4);
+  // player names
+  c.textSize(10);
+  c.textAlign(CENTER);
+  c.text(this.name, this.pos.x, this.pos.y - 30);
 }
-Player.List = {};
+// Player.List = {};
