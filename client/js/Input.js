@@ -18,7 +18,6 @@ const Key = (function () {
 
   function onUp(callback) {
     window.addEventListener('keyup', function (e) {
-      console.log(KEYS[e.which])
       STATES[ KEYS[e.which] ] = true;
       callback(KEYS[e.which], STATES)
     });

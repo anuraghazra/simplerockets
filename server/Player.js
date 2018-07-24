@@ -7,6 +7,7 @@ function Player(name, id) {
   this.vel = new Vector(0, 0);
   this.thrust = new Vector(0, 0);
   this.thrusting = false;
+  this.shooting = false;
   this.angle = 0;
   this.index = 0;
   this.id = id;
@@ -48,11 +49,8 @@ Player.prototype.update = function () {
   if (this.key.right) this.angle += 0.1;
   if (this.key.left) this.angle -= 0.1;
 
-  if (this.key.up) {
-    this.thrusting = true;
-  } else {
-    this.thrusting = false
-  }
+  this.thrusting = (this.key.up) ? true : false;
+  this.shooting = (this.key.space) ? true : false;
 
   if (this.hp <= 0) this.dead = true;
 
@@ -72,6 +70,8 @@ Player.prototype.respawn = function () {
   this.hp = 100;
   this.dead = false;
 }
+
+
 Player.prototype.shoot = function () {
   let bullet = new Bullet(this.pos, this.angle, this.index, this.id);
   this.index++;

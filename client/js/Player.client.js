@@ -8,34 +8,55 @@ function Player(pack) {
   this.maxhp = pack.maxhp;
   this.score = pack.score;
   this.thrusting = pack.thrusting;
+  this.shooting = pack.shooting;
+  this.sprite = new Sprite({
+    img: rocketImage,
+    x: 0, y: 0,
+    cols: 17,
+    ticksPerFrame: 2,
+    resizeBy: 3
+  });
+
+  this.timer = null;
+
+  this.sprite.update();
+
 }
 
-Player.prototype.draw = function() {
+Player.prototype.draw = function () {
+  let self = this;
+  if (this.shooting) {
+    if (self.timer == null) {
+      self.timer = window.setInterval(function () {
+        self.sprite.update();
+        if (self.sprite.frameIndex >= self.sprite.cols - 1) {
+          clearInterval(self.timer);
+          self.timer = null;
+          self.sprite.tickCount = 2;
+        }
+      }, 20);
+    }
+  }
   c.push();
-  c.stroke('black')
   c.translate(this.pos.x, this.pos.y);
   c.rotate(this.angle);
-  c.begin();
-  c.from(10, 0);
-  c.to(-10, -7);
-  c.to(-10, 7);
-  c.to(10, 0);
-  if (this.thrusting) {
-    c.from(-10, 0);
-    c.to(-18, 0);
-  }
-  c.close();
-  c.stroke()
+  c.image(
+    this.sprite.img,
+    this.sprite.sx, this.sprite.sy,
+    this.sprite.sw, this.sprite.sh,
+    -35, -35, //x, y
+    this.sprite.dw, this.sprite.dh
+  )
   c.pop();
 }
 
-Player.prototype.drawHp = function() {
+Player.prototype.drawHp = function () {
   c.fill('crimson');
   c.noStroke();
-  c.rect(this.pos.x - 15, this.pos.y - 25, this.hp * 30 / this.maxhp, 4);
-  // player names
+  c.rect(this.pos.x - 15, this.pos.y - 40, this.hp * 30 / this.maxhp, 4);
+  
+  // draw player names
   c.textSize(10);
   c.textAlign(CENTER);
-  c.text(this.name, this.pos.x, this.pos.y - 30);
+  c.text(this.name, this.pos.x, this.pos.y - 45);
 }
-// Player.List = {};

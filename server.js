@@ -30,6 +30,9 @@ io.sockets.on('connection', function (socket) {
   // add new player
   socket.on('new-player', function (data) {
     game.addPlayer(data.name, socket);
+    for (const i in game.clients) {
+      game.sendInitPack(game.clients[i]);
+    }
   });
 
   // remove player
@@ -55,7 +58,7 @@ setInterval(loop, FRAMERATE);
 function loop() {
   game.update(sock);
   for (const i in game.clients) {
-    game.sendPack(game.clients[i]);
+    game.sendUpdatePack(game.clients[i]);
     game.clients[i].emit('remove-player', removePack);
   }
 }
