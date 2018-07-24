@@ -7,21 +7,12 @@ function Game(socket) {
 }
 
 Game.prototype.sendUserInput = function () {
-  window.addEventListener('keydown', function (e) {
-    // e.preventDefault();
-    if (e.key === 'a') socket.emit('keypress', { key: 'a', state: true, id: socket.id })
-    if (e.key === 'd') socket.emit('keypress', { key: 'd', state: true, id: socket.id })
-    if (e.key === 'w') socket.emit('keypress', { key: 'w', state: true, id: socket.id })
-    if (e.key === 's') socket.emit('keypress', { key: 's', state: true, id: socket.id })
-    if (e.key === ' ') socket.emit('keypress', { key: ' ', state: true, id: socket.id })
-  })
-  window.addEventListener('keyup', function (e) {
-    if (e.key === 'a') socket.emit('keypress', { key: 'a', state: false, id: socket.id })
-    if (e.key === 'd') socket.emit('keypress', { key: 'd', state: false, id: socket.id })
-    if (e.key === 'w') socket.emit('keypress', { key: 'w', state: false, id: socket.id })
-    if (e.key === 's') socket.emit('keypress', { key: 's', state: false, id: socket.id })
-    if (e.key === ' ') socket.emit('keypress', { key: ' ', state: false, id: socket.id })
-  })
+  Key.onDown(function(key, states) {
+    socket.emit('keypress', { key: key, state: true, id: socket.id });
+  });
+  Key.onUp(function(key, states) {
+    socket.emit('keypress', { key: key, state: false, id: socket.id });
+  });
 }
 
 Game.prototype.getServerData = function (serverdata) {

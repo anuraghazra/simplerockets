@@ -12,7 +12,7 @@ function Bullet(pos, angle, id, parent) {
   this.parent = parent;
 }
 
-Bullet.prototype.update = function(players, gameAlerts, socket) {
+Bullet.prototype.update = function(players, gameAlerts) {
   this.pos.add(this.vel);
   this.timer++;
 
@@ -21,6 +21,7 @@ Bullet.prototype.update = function(players, gameAlerts, socket) {
     let p = players[i];
     if (this.getDistance(p.pos) < 20 && p.id !== this.parent) {
       p.hp -= 10;
+      p.applyForce(this.vel.mult(0.08))
       p.hp = utils.clamp(p.hp, 0, p.maxhp);
       this.isDead = true;
     }

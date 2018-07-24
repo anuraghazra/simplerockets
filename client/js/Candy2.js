@@ -1,94 +1,65 @@
 /**
  * Candy.js
- * @version v1.1.0
- * @description Easy to use canvas renderer similar to p5.Renderer
- * @constructor Candy()
+ * @version v1.0.1
+ * @constructor Candy
  * @author Anurag Hazra <hazru.anurag@gmail.com>
- * @param {string?} canvas 
- * @param {Number?} width 
- * @param {Number?} height 
+ * @description Easy to use canvas renderer similar to p5.Renderer
+ * @param {string} canvas 
  */
-function Candy(canvas, width, height) {
+function Candy(canvas) {
   // optional constructor
   if (!(this instanceof Candy)) {
     return new Candy(canvas);
   };
 
-  if (canvas !== undefined) {
-    this.canvas = document.querySelector(canvas);
-    this.ctx = this.canvas.getContext('2d');
-    this.width = width;
-    this.height = height;
-    this.canvas.width = CANVAS_WIDTH = this.width;
-    this.canvas.height = CANVAS_HEIGHT = this.height;
+  this.screenBuffers = {};
+
+  if (canvas) {
+    this.ctx = canvas.getContext('2d');
+    this.canvas = canvas;
+    CANVAS_WIDTH = this.canvas.width;
+    CANVAS_HEIGHT = this.canvas.height;
+
+    // window.addEventListener('resize', function () {
+    //   this.resizeCanvas(this.canvas);
+    // }.bind(this));
+    // this.resizeCanvas(this.canvas);
   }
 
-  // Variables
+  // id of canvas
   this.idIndex = 0;
-  this.screenBuffers = {};
-  this.fireCallback = false;
-  this.resCount = 0;
-  // Rendering States
+
+  // Rendering Context
   this.doFill = true;
   this.doStroke = true;
+
   this.font = ['24px', 'Arial'];
+
+  // loop?
   this.animateLoop = true;
 
-  
-  if(window.preload) {
-    let timer = window.setInterval(function () {
-      if (this.resCount <= 0) {
-        let time = (performance.now()/1000).toFixed(2);
-        window.preload();
-        console.log('%cAll Resources Loaded in ' + time +'s','color : green')
-        window.clearInterval(timer);
-        return;
-      }
-    }.bind(this), 10);
-  }
-
-  // this._initCanvas();
+  this._initCanvas();
 }
 
-
-/**
- * FUNCTIONAL PROTOTYPES /////////////////
- */
-
-/**
- * @method Candy.resize()
- * @param {Boolean} cull
- */
-Candy.prototype.resize = function (cull) {
-  window.addEventListener('resize', function () {
-    this.resizeCanvas(this.canvas, cull);
-  }.bind(this));
-  this.resizeCanvas(this.canvas, cull);
-}
-
-/**
- * @method Candy.createCanvas()
- * @param {Number} w 
- * @param {Number} h 
- */
 Candy.prototype.createCanvas = function (w, h) {
   this.canvas = document.createElement('canvas');
   this.canvas.id = 'CandyCanvas-' + this.idIndex;
-  this.canvas.width = w || 200;
-  this.canvas.height = h || 200;
+  this.canvas.width = optional(checkType(w, 'number'), 200);
+  this.canvas.height = optional(checkType(h, 'number'), 200);
   CANVAS_WIDTH = this.canvas.width;
   CANVAS_HEIGHT = this.canvas.height;
   this.ctx = this.canvas.getContext('2d');
   document.body.appendChild(this.canvas);
 
+  // window.addEventListener('resize', function () {
+  //   this.resizeCanvas(this.canvas);
+  // }.bind(this));
+  // this.resizeCanvas(this.canvas);
+
   this.index++;
   return this;
 }
 
-/**
- * @method Candy.createScreenBuffer()
- * @param {String} name 
- */
 Candy.prototype.createScreenBuffer = function (name) {
   let canvas = document.createElement('canvas');
   canvas.id = 'CandyCanvasOffscreen-' + this.idIndex;
@@ -97,140 +68,31 @@ Candy.prototype.createScreenBuffer = function (name) {
   // this.resizeCanvas(canvas);
   this.screenBuffers[name] = new Candy(canvas);
 }
-
-/**
- * @method Candy.putScreenBuffer()
- * @param {imageData} data 
- */
 Candy.prototype.putScreenBuffer = function (data) {
   this.ctx.drawImage(data.canvas, 0, 0);
 }
 
-// Candy.prototype._initCanvas = function () {
-//   window.addEventListener('DOMContentLoaded', function () {
-//     if (window.animate && this.fireCallback) {
-//       animate();
-//     }
-//   }.bind(this));
-// }
+Candy.prototype._initCanvas = function () {
+  window.addEventListener('DOMContentLoaded', function () {
+    if (window.animate) {
+      animate();
+    }
+  }.bind(this));
+}
 
-// Candy.prototype.noLoop = function () {
-//   this.animateLoop = false;
-// }
-
-/**
- * @method Candy.loop()
- * @param {Function} func 
- */
+Candy.prototype.noLoop = function () {
+  this.animateLoop = false;
+}
 Candy.prototype.loop = function (func) {
-  // if (this.animateLoop) {
-  //   if (window.animate) {
-  //     requestAnimationFrame(animate);
-  //   } else {
-  //     requestAnimationFrame(func)
-  //   }
-  // }
-  return requestAnimationFrame(func);
-}
-
-/**
- * @method Candy.loadImage()
- * @param {String} url 
- */
-Candy.prototype.loadImage = function (url) {
-  this.resCount++;
-  let img = new Image();
-  img.src = url;
-  img.onload = function () { this.resCount--; }.bind(this);
-  return img;
-}
-
-/**
- * @method Candy.loadJSON()
- * @param {String} url 
- */
-Candy.prototype.loadJSON = function (url, callback) {
-  this.resCount++;
-  let xhr = new XMLHttpRequest();
-  
-  xhr.open('GET', url, true);
-  xhr.onload = () => {
-    this.resCount--;
-    if(xhr.readyState === 4 && xhr.status === 200) {
-      callback(null, xhr.responseText);
+  if (this.animateLoop) {
+    if (window.animate) {
+      requestAnimationFrame(animate);
     } else {
-      callback('Error loading JSON', null);
-    }
-  }
-  xhr.send();
-
-}
-
-/**
- * @method Candy.drawJSON()
- * @param {JSON} json 
- */
-Candy.prototype.drawJSON = function (json) {
-  for (const i in json) {
-    let key = (i).split('-')[0];
-    switch (key) {
-      case 'fill':
-        this[key](json[key])
-        break;
-      case 'stroke':
-        this[key](json[key])
-        break;
-
-      // do defaults 
-      default:
-        if (typeof json[key] === 'object') {
-          this[key].apply(this, json[key])
-        } else {
-          this[key].call(this, json[key])
-        }
-        break;
+      requestAnimationFrame(func)
     }
   }
 }
 
-/**
- * @method Candy.resizeCanvas()
- * @param {Element} canvas 
- * @param {Boolean} cull 
- */
-Candy.prototype.resizeCanvas = function (canvas, cull) {
-  let targetHeight = window.innerWidth * 9 / 16;
-
-  if (window.innerHeight > targetHeight) {
-    if (cull) {
-      canvas.width = window.innerWidth;
-      canvas.height = targetHeight;
-    } else {
-      canvas.style.width = window.innerWidth + 'px';
-      canvas.style.height = targetHeight + 'px';
-    }
-    canvas.style.left = '0px';
-    canvas.style.top = (window.innerHeight - targetHeight) / 2 + 'px';
-  } else {
-    if (cull) {
-      canvas.width = window.innerHeight * 16 / 9;
-      canvas.height = window.innerHeight;
-    } else {
-      canvas.style.width = window.innerHeight * 16 / 9 + 'px';
-      canvas.style.height = window.innerHeight + 'px';
-    }
-    canvas.style.left = (window.innerWidth - (canvas.width)) / 2 + 'px';
-    canvas.style.top = '0px';
-  }
-}
-
-/**
- * @method Candy._parseColor()
- * @param {String|Number} r 
- * @param {String|Number} g 
- * @param {String|Number} b 
- * @param {String|Number} a 
- */
 Candy.prototype._parseColor = function (r, g, b, a) {
   let color = r;
   if (typeof r === 'number') {
@@ -246,35 +108,15 @@ Candy.prototype._parseColor = function (r, g, b, a) {
   return color;
 }
 
-/**
- * RENDERING PROTOTYPES /////////////////
- */
-
-
-/**
- * @method Candy.noFill()
- */
 Candy.prototype.noFill = function () {
   this.doFill = false;
   return this;
 }
-
-
-/**
- * @method Candy.noStroke()
- */
 Candy.prototype.noStroke = function () {
   this.doStroke = false;
   return this;
 }
 
-/**
- * @method Candy.fill()
- * @param {String|Number} r 
- * @param {String|Number} g 
- * @param {String|Number} b 
- * @param {String|Number} a 
- */
 Candy.prototype.fill = function (r, g, b, a) {
   let color = this._parseColor(r, g, b, a)
 
@@ -297,14 +139,6 @@ Candy.prototype.fill = function (r, g, b, a) {
   }
   return this;
 }
-
-/**
- * @method Candy.fill()
- * @param {String|Number} r 
- * @param {String|Number} g 
- * @param {String|Number} b 
- * @param {String|Number} a 
- */
 Candy.prototype.stroke = function (r, g, b, a) {
   let color = this._parseColor(r, g, b, a);
 
@@ -327,14 +161,7 @@ Candy.prototype.stroke = function (r, g, b, a) {
   return this;
 }
 
-/**
- * @method Candy.linearGradient()
- * @param {String} x 
- * @param {String} y 
- * @param {String} a 
- * @param {String} s 
- * @param {Array} colors 
- */
+// Gradient
 Candy.prototype.linearGradient = function (x, y, a, s, colors) {
   let grad = this.ctx.createLinearGradient(x, y, a, s);
   for (let i = 0; i < colors.length; i++) {
@@ -347,16 +174,7 @@ Candy.prototype.linearGradient = function (x, y, a, s, colors) {
   }
   return grad;
 }
-
-
-/**
- * @method Candy.radialGradient()
- * @param {String} x 
- * @param {String} y 
- * @param {String} innerRadius 
- * @param {String} outerRadius 
- * @param {Array} colors 
- */
+// Gradient
 Candy.prototype.radialGradient = function (x, y, innerRadius, outerRadius, colors) {
   let grad = this.ctx.createRadialGradient(x, y, innerRadius, x, y, outerRadius);
   for (let i = 0; i < colors.length; i++) {
@@ -370,22 +188,11 @@ Candy.prototype.radialGradient = function (x, y, innerRadius, outerRadius, color
   return grad;
 }
 
-/**
- * @method Candy.strokeWeight()
- * @param {Number} width 
- */
 Candy.prototype.strokeWeight = function (width) {
   this.ctx.lineWidth = width;
   return this;
 }
 
-/**
- * @method Candy.clear()
- * @param {String|Number} r 
- * @param {String|Number} g 
- * @param {String|Number} b 
- * @param {String|Number} a 
- */
 Candy.prototype.clear = function (r, g, b, a) {
   let c = this._parseColor(r, g, b, a);
   if (c) {
@@ -398,18 +205,6 @@ Candy.prototype.clear = function (r, g, b, a) {
   }
 }
 
-
-/**
- * @method Candy.rect()
- * @param {Number} x
- * @param {Number} y
- * @param {Number} w 
- * @param {Number} h 
- * @param {Number} tl 
- * @param {Number} tr 
- * @param {Number} br 
- * @param {Number} bl 
- */
 Candy.prototype.rect = function (x, y, w, h, tl, tr, br, bl) {
   if (h === undefined) { h = w };
   if (tr === undefined) { tr = tl };
@@ -438,13 +233,6 @@ Candy.prototype.rect = function (x, y, w, h, tl, tr, br, bl) {
   }
 }
 
-/**
- * @method Candy.triangle()
- * @param {Number} x
- * @param {Number} y
- * @param {Number} w 
- * @param {Number} h
- */
 Candy.prototype.triangle = function (x, y, w, h) {
   this.ctx.beginPath();
   this.ctx.moveTo(x, y);
@@ -456,12 +244,6 @@ Candy.prototype.triangle = function (x, y, w, h) {
   this.doStroke && this.ctx.stroke();
 }
 
-/**
- * @method Candy.circle()
- * @param {Number} x
- * @param {Number} y
- * @param {Number} radius
- */
 Candy.prototype.circle = function (x, y, radius) {
   this.ctx.beginPath();
   this.ctx.arc(x, y, radius, 0, Math.PI * 2);
@@ -471,13 +253,6 @@ Candy.prototype.circle = function (x, y, radius) {
   return this;
 }
 
-/**
- * @method Candy.line()
- * @param {Number} x1
- * @param {Number} y2
- * @param {Number} x2
- * @param {Number} y2
- */
 Candy.prototype.line = function (x1, y1, x2, y2) {
   this.ctx.beginPath();
   this.ctx.moveTo(x1, y1);
@@ -488,38 +263,19 @@ Candy.prototype.line = function (x1, y1, x2, y2) {
   return this;
 }
 
-/**
- * @method Candy.begin()
- */
 Candy.prototype.begin = function () {
   this.ctx.beginPath();
 }
-
-/**
- * @method Candy.close()
- */
 Candy.prototype.close = function () {
   this.ctx.closePath();
 }
-
-/**
- * @method Candy.from()
- * @param {Number} x
- * @param {Number} y
- */
 Candy.prototype.from = function (x, y) {
-  console.log(typeof x)
   if (typeof x === 'object') {
     this.ctx.moveTo(x.x, x.y)
   }
   this.ctx.moveTo(x, y);
   return this;
 }
-/**
- * @method Candy.to()
- * @param {Number} x
- * @param {Number} y
- */
 Candy.prototype.to = function (x, y) {
   if (typeof x === 'object') {
     this.ctx.lineTo(x.x, x.y)
@@ -528,81 +284,25 @@ Candy.prototype.to = function (x, y) {
   return this;
 }
 
-
-/**
- * @method Candy.image()
- * @param {Image} img
- * @param {Number} sx
- * @param {Number} sy
- * @param {Number} sw
- * @param {Number} sh
- * @param {Number} dx
- * @param {Number} dy
- * @param {Number} dw
- * @param {Number} dh
- */
-Candy.prototype.image = function (img, sx, sy, sw, sh, dx, dy, dw, dh) {
-  if (!img.complete) {
-    window.setTimeout(() => {
-      if (arguments.length === 5) {
-        this.image(img, sx, sy, sw, sh);
-      } else {
-        this.image(img, sx, sy, sw, sh, dx, dy, dw, dh);
-      }
-    }, 50);
-    return;
-  }
-  if (arguments.length === 5) {
-    this.ctx.drawImage(img, sx, sy, sw, sh);
-  } else {
-    this.ctx.drawImage(img, sx, sy, sw, sh, dx, dy, dw, dh);
-  }
+Candy.prototype.image = function (img, x, y, w, h) {
+  this.ctx.drawImage(img, x, y, w, h)
 }
 
-
-/**
- * @method Candy.textAlign()
- * @param {String} value
- */
 Candy.prototype.textAlign = function (value) {
   this.ctx.textAlign = value;
 }
-
-/**
- * @method Candy.textBaseline()
- * @param {String} value
- */
 Candy.prototype.textBaseline = function (value) {
   this.ctx.textBaseline = value;
 }
 
-/**
- * @method Candy.textFont()
- * @param {String} value
- */
 Candy.prototype.textFont = function (font) {
   this.font[1] = font;
   return this;
 }
-
-
-/**
- * @method Candy.textSize()
- * @param {Number} value
- */
 Candy.prototype.textSize = function (size) {
   this.font[0] = size + 'px';
   return this;
 }
-
-/**
- * @method Candy.text()
- * @param {String} str
- * @param {Number} x
- * @param {Number} y
- * @param {Number} w
- * @param {Number} h
- */
 Candy.prototype.text = function (str, x, y, w, h) {
   // this.ctx.textAlign = 'end';
   // this.ctx.textBaseline = 'bottom';
@@ -612,73 +312,37 @@ Candy.prototype.text = function (str, x, y, w, h) {
   return this;
 }
 
-/**
- * @method Candy.blendMode()
- * @param {Number} mode
- */
 Candy.prototype.blendMode = function (mode) {
   this.ctx.globalCompositeOperation = mode;
 }
-
-/**
- * @method Candy.alpha()
- * @param {Float} value
- */
 Candy.prototype.alpha = function (value) {
   this.ctx.globalAlpha = value;
 }
 
-
-/**
- * @method Candy.translate()
- * @param {Number} x
- * @param {Number} y
- */
 Candy.prototype.translate = function (x, y) {
   if (y === undefined) { y = x }
   this.ctx.translate(x, y);
   return this;
 }
 
-/**
- * @method Candy.rotate()
- * @param {Number} deg
- */
 Candy.prototype.rotate = function (deg) {
   this.ctx.rotate(deg);
   return this;
 }
 
-/**
- * @method Candy.transRot()
- * @param {Number} x
- * @param {Number} y
- * @param {Number} deg
- */
 Candy.prototype.transRot = function (x, y, deg) {
   this.ctx.translate(x, y);
   this.ctx.rotate(deg);
   return this;
 }
 
-/**
- * @method Candy.push()
- */
 Candy.prototype.push = function () {
   this.ctx.save();
 }
-
-/**
- * @method Candy.pop()
- */
 Candy.prototype.pop = function () {
   this.ctx.restore();
 }
 
-/**
- * @method Candy.smooth()
- * @param {String} qulty
- */
 Candy.prototype.smooth = function (qulty) {
   if ('imageSmoothingEnabled' in this.ctx) {
     this.ctx.imageSmoothingEnabled = true;
@@ -686,12 +350,48 @@ Candy.prototype.smooth = function (qulty) {
   }
 }
 
-/**
- * @method Candy.noSmooth()
- */
 Candy.prototype.noSmooth = function () {
   if ('imageSmoothingEnabled' in this.ctx) {
     this.ctx.imageSmoothingEnabled = false;
+  }
+}
+
+Candy.prototype.drawJSON = function (json) {
+  for (const i in json) {
+    let key = (i).split('-')[0];
+    switch (key) {
+      case 'fill':
+        this[key](json[key])
+        break;
+      case 'stroke':
+        this[key](json[key])
+        break;
+
+      // do defaults 
+      default:
+        if (typeof json[key] === 'object') {
+          this[key].apply(this, json[key])
+        } else {
+          this[key].call(this, json[key])
+        }
+        break;
+    }
+  }
+}
+
+Candy.prototype.resizeCanvas = function (canvas) {
+  let targetHeight = window.innerWidth * 9 / 16;
+
+  if (window.innerHeight > targetHeight) {
+    canvas.width = window.innerWidth;
+    canvas.height = targetHeight;
+    canvas.style.left = '0px';
+    canvas.style.top = (window.innerHeight - targetHeight) / 2 + 'px';
+  } else {
+    canvas.width = window.innerHeight * 16 / 9;
+    canvas.height = window.innerHeight;
+    canvas.style.left = (window.innerWidth - (canvas.width)) / 2 + 'px';
+    canvas.style.top = '0px';
   }
 }
 
@@ -789,7 +489,6 @@ function optional(value, optValue) {
 
 let mouseX = 0;
 let mouseY = 0;
-let mouseDown = false;
 let CANVAS_WIDTH = 0;
 let CANVAS_HEIGHT = 0;
 let WINDOW_WIDTH = 0;
@@ -797,12 +496,6 @@ let WINDOW_HEIGHT = 0;
 window.addEventListener('mousemove', function (e) {
   mouseX = e.offsetX;
   mouseY = e.offsetY;
-});
-window.addEventListener('mousedown', function() {
-  mouseDown = true;
-});
-window.addEventListener('mouseup', function() {
-  mouseDown = false;
 });
 
 function getWindowSize() {

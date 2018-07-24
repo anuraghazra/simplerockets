@@ -8,7 +8,6 @@ function Player(pack) {
   this.maxhp = pack.maxhp;
   this.score = pack.score;
   this.thrusting = pack.thrusting;
-  
 }
 
 Player.prototype.draw = function() {

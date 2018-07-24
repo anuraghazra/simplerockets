@@ -73,27 +73,17 @@ Player.prototype.respawn = function () {
   this.dead = false;
 }
 Player.prototype.shoot = function () {
-  let bullet = new Bullet(this.pos, this.angle, this.index,  this.id);
+  let bullet = new Bullet(this.pos, this.angle, this.index, this.id);
   this.index++;
   return bullet;
 }
 
 Player.prototype.updateInput = function (data) {
-  if (data.key === 'a') {
-    this.key.left = data.state;
-  }
-  if (data.key === 'd') {
-    this.key.right = data.state;
-  }
-  if (data.key === 'w') {
-    this.key.up = data.state;
-  }
-  if (data.key === 's') {
-    this.key.down = data.state;
-  }
-  if (data.key === ' ') {
-    this.key.space = data.state;
-  }
+  if (data.key === 'A') this.key.left = data.state;
+  if (data.key === 'D') this.key.right = data.state;
+  if (data.key === 'W') this.key.up = data.state;
+  if (data.key === 'S') this.key.down = data.state;
+  if (data.key === ' ') this.key.space = data.state;
 }
 
 Player.createNewPlayer = function (name, id) {

@@ -35,7 +35,6 @@ socket.on('game-alerts', function (data) {
     if(!scrolling) {
       div.scrollBy(0, div.offsetHeight*10);
     }
-    // console.log(data[i])
     div.innerHTML += '<p>' + data[i] + '</p>';
   }
 });
