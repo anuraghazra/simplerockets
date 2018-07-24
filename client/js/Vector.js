@@ -154,10 +154,3 @@ Vector.prototype = {
   //   return grav.div(dist).negative()
   // }
 }
-
-
-if(typeof(module) === undefined) {
-  window.Vector = Vector;
-} else {
-  module.exports = Vector;
-}

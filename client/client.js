@@ -9,6 +9,7 @@ let playerName = document.getElementById('player-name');
 
 let rocketImage = c.loadImage('./images/Rockets.png');
 let bulletImage = c.loadImage('./images/bullet.png');
+let smokeImage = c.loadImage('./images/emitter1.png');
 
 function preload() {
   init();

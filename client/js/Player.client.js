@@ -21,6 +21,8 @@ function Player(pack) {
 
   this.sprite.update();
 
+  this.particleSystem = new ParticleSystem(this.pos.x, this.pos.y, smokeImage);
+
 }
 
 Player.prototype.draw = function () {
@@ -44,10 +46,17 @@ Player.prototype.draw = function () {
     this.sprite.img,
     this.sprite.sx, this.sprite.sy,
     this.sprite.sw, this.sprite.sh,
-    -35, -35, //x, y
+    -this.sprite.dw/2, -this.sprite.dh/2, //x, y
     this.sprite.dw, this.sprite.dh
   )
   c.pop();
+
+  this.particleSystem.origin.x = this.pos.x;
+  this.particleSystem.origin.y = this.pos.y;
+  for (let i = 0; i < 1; i++) {
+    this.particleSystem.addParticle();
+  }
+  this.particleSystem.update(this.angle);
 }
 
 Player.prototype.drawHp = function () {
