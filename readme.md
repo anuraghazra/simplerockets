@@ -1,3 +1,5 @@
 # Simple Rockets
 
-## NodeJS Socket.io Multiplayer Game
+### NodeJS And Socket.io Multiplayer Game
+
+@author Anurag Hazra <hazru.anurag@gmail.com>

@@ -1,3 +1,8 @@
+/**
+ * @class Game
+ * @param {socket} socket
+ * @author Anurag Hazra <hazru.anurag@gmail.com>
+ */
 function Game(socket) {
   this.socket = socket;
   this.self = null;
