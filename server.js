@@ -15,8 +15,8 @@ app.get('/', function (req, res) {
 
 app.use('/', express.static(__dirname + '/client'));
 
-server.listen(5000);
-
+// server.listen(5000);
+server.listen(process.env.PORT || 3000);
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 const FRAMERATE = 1000 / 24;
